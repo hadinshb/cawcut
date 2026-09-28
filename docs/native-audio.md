@@ -2,34 +2,49 @@
 
 Request: **Polish audio** or `/cawcut-audio [project name]`.
 
-This workflow uses three native Final Cut controls only. It does not bake a separately processed audio file into the edit.
+This workflow compares ONE passage in ONE audition reel, requests ONE native export, analyzes it and automatically delivers ONE new version of the original full project. It tunes only two native controls:
 
-| Control | Adjustments | Aim |
+| Control | Adjustment | Aim |
 |---|---|---|
-| Voice Isolation | Enabled, Amount | Suppress competing noise while retaining natural speech |
-| Loudness | Enabled, Amount and Uniformity | Balance quiet and loud speech without excessive flattening |
-| Volume | Gain in dB | Set final level without clipping |
+| Voice Isolation | Enabled, recording-specific Amount | Reduce background noise without excessive speech damage |
+| Volume | One gain stage in dB | Set a useful level with peak headroom |
+| Loudness | OFF, not tuned | Outside this workflow |
 
-There is no universal "best" value. Record quality, room sound, microphone and voice change the trade-off. Turning everything up can make speech harsher or distorted. These controls can improve a recording but cannot guarantee that it sounds like a studio microphone, reconstruct clipped audio or fully remove every room reflection.
+It does not replace dialogue with an externally cleaned file. Extraction/decoding and measurement are allowed; external denoising, EQ, gates, compression, limiting, third-party effects and paid APIs are not. Volume scales speech and residual noise together; it does not flatten changing speech dynamics. These two controls cannot guarantee studio-microphone sound or repair baked-in clipping/processing.
 
-The current project's actual settings and native playback are the source of truth. Preserve a baseline and audition a short representative passage. Tune isolation, then loudness, then final gain. Final Cut's analysis can assist where available but does not replace listening. Enable both requested enhancements, using minimal effective strength where little correction is needed.
+## Normal workflow
 
-Steady air/hiss between words is an explicit tuning target. Compare the same noisy pauses while changing only Voice Isolation, then check whether Loudness brings the air back up. Lower Loudness Amount or Uniformity before forcing excessive isolation, while keeping both enhancements enabled. Preserve natural breaths and /s/, /f/, /sh/ consonants. Prefer unobtrusive background over absolute silence that makes the voice watery or thin. If these three controls cannot satisfy both noise reduction and voice quality, report the limit rather than adding another processor. Values chosen for one recording are not reusable global defaults.
+1. Identify the actual current project, preserve a baseline and inspect linked dialogue/processing. Request a current XML only if the bridge cannot retrieve it. Preserve graphics, edits and other tracks.
+2. Build one frame-accurate audition from a representative contiguous 10–15 second passage, repeated with labelled candidate settings. Usually seven candidates: an isolation-off reference, four isolation strengths sharing a safe gain, and two gain variants at a middle isolation strength. Loudness stays off. Candidate ranges adapt to the recording; they are not fixed best presets.
+3. Import one clearly named audition project. The user exports its entire timeline as Audio Only WAV, preferably 48 kHz, to `out/<recording>/fcp-export/`. No individual exports or manual slider testing are normally needed.
+4. Verify the native export against the saved candidate manifest. Measure speech loudness, true peak, pause noise and relative speech/consonant retention. Compare at matched speech levels in analysis, not simply by which is louder or quieter between words.
+5. Select the lowest useful isolation before excessive suppression/diminishing returns, then calculate Volume from the processed signal, loudness target and peak ceiling. Deliver a new full project version with those settings automatically; keep the old project unchanged. If the target changed during the wait, refresh it first so recent work is preserved.
+6. The user listens once to confirm naturalness. If measurements are inconclusive, ask for one listening choice rather than claiming a winner. Recommend one additional full-project native export for final QC, not one export per clip. The audition selects settings; full output verifies louder/quieter/noisier regions and the final peak/loudness. Full-project QC stays UNVERIFIED without this evidence; make the request necessary if clipping/artifacts are suspected.
+
+If full-project QC finds a real level mismatch, propose conservative overall or region-level Volume corrections. Keep isolation consistent unless noise/microphone conditions genuinely change; don't assign arbitrary settings to every clip. Mixed music/SFX can invalidate isolated-dialogue measurements, so disclose the limitation. Any further refinement/import needs approval and preserves the current version. Measurement alone still cannot certify naturalness.
+
+The command authorizes the audition and final project versions, not repeated speculative imports or deletion. Resume existing work rather than duplicating projects. Any additional round needs the user's choice. The original recording and project remain intact.
+
+## Measurement versus quality
+
+Steady air/hiss, breaths and /s/, /f/, /sh/ consonants are different. Preserve voice body and speech sounds; zero background energy is not the goal. Loudness matching, spectral comparison and recognition checks can flag damage, but cannot prove that the voice is natural. Report a winner as **MEASUREMENT-SELECTED / LISTENING UNVERIFIED** until listening feedback supports it, never universally best or studio-quality.
+
+Choose gain from actual Final Cut-processed output: add the smaller of the loudness deficit and available true-peak headroom to the candidate gain, with a documented safety margin/range check. If target loudness is impossible without clipping, keep it quieter and explain why. Do not add Loudness or a limiter. The same selected settings apply to the same recording/speaker; do not change music, effects or other recordings blindly.
 
 ## Automation boundaries
 
-Native XML settings are possible when the installed schema and bridge support them, but writing a valid XML does not prove that Final Cut applied the settings or that they sound good. Native enhancements are component-level. Respect audio routing; simultaneous voice isolation on duplicate components can garble the result.
+Native settings are possible when the installed schema/bridge supports them. Audio enhancements belong to the correct audio component; avoid duplicate simultaneous processing and double gain. Validate the installed DTD and verify settings/checkboxes after import. An XML pass or stored setting is not proof of rendered quality.
 
-The bridge may support only XML reimport, not in-place modification of the open project. The workflow explains this before adding a new project. Current edits must be exported first if only an older XML is available. It never patches the app or edits its Library database.
+The current bridge uses XML import for new project versions, not dependable in-place editing. Native Apple processing is not executed by its general ffmpeg preview. The user's WAV must come from Final Cut itself; proxy measurements cannot choose native isolation. Do not promise unattended export without verifying a supported route, install a UI bridge silently, patch the app or write its Library database.
 
-A general MCP/ffmpeg preview may omit native audio enhancement processing. Only native Final Cut playback or export can confirm the sound. If automation cannot access those steps, the user supplies playback feedback, confirms the Inspector values or exports a sample. External tools may measure that export but must not process it for this workflow.
+If unrelated existing dialogue processors are active, disclose the conflict and obtain permission before bypass/removal; do not call the result two-control-only while they remain active. Native Loudness is explicitly disabled by this command. Previously baked processing cannot be undone.
 
-All settings and measurements are local run data in `work/`, ignored by Git. No fixed presets, personal samples or prior-user results are included.
+Manifest and reports live in `work/<recording>/`, media in `out/<recording>/`, all ignored by Git. Portable instructions contain no personal sample IDs, fixed home paths or prior-user settings.
 
 ## References
 
 - [Apple: Enhance audio](https://support.apple.com/guide/final-cut-pro/enhance-audio-verc1fab873/mac)
-- [Apple: Loudness XML attributes](https://developer.apple.com/documentation/professional-video-applications/adjust-loudness)
 - [Apple: Volume XML adjustment](https://developer.apple.com/documentation/professional-video-applications/adjust-volume)
+- [Bridge: Live mode and native export limitations](https://github.com/DareDev256/fcp-mcp-server#live-mode-macos)
 
-For Voice Isolation XML support, inspect the DTD bundled with the installed Final Cut version rather than relying on an old online schema. Validate placement, units and enabled state against that version and a real export.
+For Voice Isolation XML support, inspect the DTD bundled with the installed Final Cut version and verify units/enabled state against an actual native export.

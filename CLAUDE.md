@@ -10,7 +10,7 @@ Read this file when working in this folder. Use the Desktop app's Code tab, Loca
 | `Set up Cawcut` or `/cawcut-setup` | Install missing dependencies, configure locally, run smoke tests |
 | `Cut <file>` or `/cawcut-cut <file>` | Transcript, removal proposal, preview, editable FCP timeline |
 | `Add graphics` or `/cawcut-graphics` | Frame-aware storyboard, transparent overlays, new FCP version |
-| `Polish audio` or `/cawcut-audio` | Native Final Cut Voice Isolation, Loudness and Volume only |
+| `Polish audio` or `/cawcut-audio` | Native Voice Isolation + Volume audition; one export, then a new polished FCP version |
 | `Make chapters` or `/cawcut-chapters` | Chapters from the final assembled video |
 
 For plain-language requests, read the matching file in `.claude/commands/` and execute its workflow. This also works if slash commands are not displayed in Desktop. Opening this folder loads instructions but MUST NOT trigger installations on its own. Begin checking when the user requests it.
@@ -45,7 +45,7 @@ MCP and newly installed skills may need a fresh Local Code session and a trust a
 8. Connected-clip tools may require an asset already registered in XML resources. Inspect the schema and source if needed; use a documented minimal XML correction if unsupported. Check whether offsets are relative to the parent source time. Verify actual resulting frame placement, not only API success.
 9. A proxy preview may omit alpha layers. Use a real composite render and ask the user to check Final Cut playback. Check whether audio fades in the preview also exist in the FCP timeline.
 10. Re-check version-specific behavior. Log fallbacks and manual steps in `work/`, never call this a zero-human-edit workflow unless actually proved.
-11. `Polish audio` has a strict native-only contract in `docs/native-audio.md`. Use only native Voice Isolation, Loudness and Volume, with both enhancements enabled. No external processing fallback. Validate against real Final Cut playback/export; no fixed "best" preset or guarantee of studio sound. Explain XML reimport/in-place limitations before delivery.
+11. `Polish audio` follows `docs/native-audio.md`: tune only native Voice Isolation and Volume, with Loudness OFF. Build one short-passage audition reel, request one native WAV export, analyze actual processed candidates and automatically deliver one new full project version preserving current edits/graphics/other tracks. No external processing fallback, fixed "best" preset or studio guarantee. These two project versions are authorized by the command; explain them, reuse work on resume, and ask before additional rounds. Measurement-selected settings remain listening-unverified until reviewed; preserve the original project.
 
 ## Reporting
 

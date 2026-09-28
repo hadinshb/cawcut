@@ -20,7 +20,7 @@ No terminal typing is required from the user. Claude runs local commands and may
 | Set up Cawcut | /cawcut-setup | Missing tools installed, MCP configured and smoke tests run |
 | Cut source/intro.mov | /cawcut-cut source/intro.mov | Removal proposal, preview and editable timeline |
 | Add graphics to the approved intro | /cawcut-graphics | Frame-aware storyboard, overlays and new timeline version |
-| Polish audio in the current project | /cawcut-audio | Native Final Cut Voice Isolation, Loudness and Volume |
+| Polish audio in the current project | /cawcut-audio | Native Voice Isolation + Volume audition, then a new polished project version |
 | Make chapters from the final video | /cawcut-chapters | Final chapter timestamps and optional timeline markers |
 
 Project-owned commands live in `.claude/commands/` and are included in this repository. If the app does not show a slash command, use the plain-English request: `CLAUDE.md` routes it to the same instructions.
@@ -64,4 +64,4 @@ Validation is reported per run; configuration files alone do not prove readiness
 
 ## Native audio polish
 
-Send **Polish audio** to tune only Final Cut's native Voice Isolation, Loudness (Amount and Uniformity) and Volume. Both enhancements must be enabled; amounts are chosen for the current recording, not copied from a universal preset. The workflow does not substitute ffmpeg processing or third-party effects. Listening and final-level validation require native Final Cut playback/export. If the available bridge cannot update the open project, it explains the import limitation before proceeding. See `docs/native-audio.md`.
+Send **Polish audio** to compare only Final Cut's native Voice Isolation and Volume; Loudness stays off. Claude builds one audition project from a short representative passage with several labelled settings. Export the whole audition once as Audio Only WAV from Final Cut and provide the file. Claude analyzes the real processed candidates, selects a measurement-backed isolation/gain combination and automatically imports one new full version of your current project, preserving cuts, graphics and other tracks. The original project remains unchanged. Listen once to confirm naturalness; inconclusive analysis or suspected clipping may require feedback or further verification. No manual number-entry loop, universal preset or studio guarantee. External tools measure the export but do not replace native audio processing. See `docs/native-audio.md`.
